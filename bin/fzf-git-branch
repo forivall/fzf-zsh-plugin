@@ -36,8 +36,15 @@ fi
 function fzf-git-branch(){
     git rev-parse HEAD > /dev/null 2>&1 || return
 
+    typeset -a opts
+    if [[ $# -eq 0 ]]; then
+      opts=(--all)
+    else
+      opts=("$@")
+    fi
+
     # shellcheck disable=SC2016
-    git branch --color=always --all --sort=-committerdate |
+    git branch --color=always "${opts[@]}" --sort=-committerdate |
         grep -v HEAD |
         fzf --height 50% --ansi --no-multi --preview-window right:65% \
             --preview 'git log -n 50 --color=always --date=short --pretty="format:%C(auto)%cd %h%d %s" $(sed "s/.* //" <<< {})' |
